@@ -39,18 +39,16 @@
   <PropertyGroup Label="Package and Assembly Metadata">
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Product>Microsoft ASP.NET Core</Product>
-    <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageIconFullPath>$(MSBuildThisFileDirectory)packageIcon.png</PackageIconFullPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\"/>
-  </ItemGroup>
 
   <PropertyGroup Label="Warning Suppressions">
     <!--
       Suppress warnings about assembly conflicts. This happens for assemblies that ship in VS so it's irrelevant.
     -->
     <NoWarn>$(NoWarn);MSB3277</NoWarn>
+    <!--
+      Ignore PackageIconUrl deprecation. Work to convert to embedded icons is tracked in https://github.com/dotnet/aspnetcore-Internal/issues/3146.
+    -->
+    <NoWarn>$(NoWarn);NU5048</NoWarn>
   </PropertyGroup>
 </Project>

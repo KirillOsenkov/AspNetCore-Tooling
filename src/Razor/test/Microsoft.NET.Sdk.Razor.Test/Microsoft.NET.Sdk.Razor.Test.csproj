@@ -7,7 +7,7 @@
       This is also a partial workaround for https://github.com/Microsoft/msbuild/issues/2661 - this project
       has netcoreapp dependencies that need to be built first.
     -->
-    <TargetFramework>$(DefaultNetCoreTargetFramework)</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <DefineConstants Condition="'$(PreserveWorkingDirectory)'=='true'">$(DefineConstants);PRESERVE_WORKING_DIRECTORY</DefineConstants>
     <!-- Copy references locally so that we can use them in the test. -->
@@ -53,6 +53,11 @@
       <_Parameter2>$(ProcDumpPath)</_Parameter2>
     </AssemblyAttribute>
 
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>Testing.RepoRoot</_Parameter1>
+      <_Parameter2>$(RepoRoot)</_Parameter2>
+    </AssemblyAttribute>
+
   </ItemGroup>
 
   <!-- The test projects rely on these binaries being available -->
@@ -96,7 +101,7 @@ namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
         static partial void InitializeVariables()
         {
             _msBuildPath = @"$(_DesktopMSBuildPath)";
-            _microsoftNETCoreApp31PackageVersion = "$(MicrosoftNETCoreApp31PackageVersion)";
+            _MicrosoftNETCoreApp50PackageVersion = "$(MicrosoftNETCoreApp50PackageVersion)";
             _microsoftNetCompilersToolsetPackageVersion = "$(MicrosoftNetCompilersToolsetPackageVersion)";
         }
     }
@@ -120,6 +125,14 @@ namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
 
   <Target Name="RestoreTestProjects" BeforeTargets="Restore;Build" Condition="'$(DotNetBuildFromSource)' != 'true'">
     <MSBuild Projects="..\testapps\RestoreTestProjects\RestoreTestProjects.csproj" Targets="Restore" Properties="MicrosoftNetCompilersToolsetPackageVersion=$(MicrosoftNetCompilersToolsetPackageVersion)" />
+
+    <!-- This target restores SimpleMvc11 and SimpleMvc11NetFx separately because otherwise the TFMs in SimpleMvc11.csproj and SimpleMvc11NetFx.csproj are not respected. -->
+    <PropertyGroup>
+      <TargetFramework11>netcoreapp1.1</TargetFramework11>
+      <TargetFrameworkNetFx>net461</TargetFrameworkNetFx>
+    </PropertyGroup>
+    <MSBuild Projects="..\testapps\SimpleMvc11\SimpleMvc11.csproj" Targets="Restore" Properties="MicrosoftNetCompilersToolsetPackageVersion=$(MicrosoftNetCompilersToolsetPackageVersion);TargetFramework=$(TargetFramework11)" />
+    <MSBuild Projects="..\testapps\SimpleMvc11NetFx\SimpleMvc11NetFx.csproj" Targets="Restore" Properties="MicrosoftNetCompilersToolsetPackageVersion=$(MicrosoftNetCompilersToolsetPackageVersion);TargetFramework=$(TargetFrameworkNetFx)" />
   </Target>
 
   <Target Name="EnsureLogFolder" AfterTargets="Build">

@@ -2905,7 +2905,7 @@ namespace Test
             // Act
             var generated = CompileToCSharp(@"
 @using Microsoft.AspNetCore.Components.Web
-<input @onclick:preventDefault @onclick:stopPropagation />");
+<button @onclick:preventDefault @onclick:stopPropagation>Click Me</button>");
 
             // Assert
             AssertDocumentNodeMatchesBaseline(generated.CodeDocument);
@@ -2921,7 +2921,7 @@ namespace Test
             // Act
             var generated = CompileToCSharp(@"
 @using Microsoft.AspNetCore.Components.Web
-<input @onfocus:preventDefault=""true"" @onclick:stopPropagation=""Foo"" @onfocus:stopPropagation=""false"" />
+<button @onclick=""() => Foo = false"" @onfocus:preventDefault=""true"" @onclick:stopPropagation=""Foo"" @onfocus:stopPropagation=""false"">Click Me</button>
 @code {
     bool Foo { get; set; }
 }");
@@ -5120,7 +5120,7 @@ namespace Test
             CompileToAssembly(generated);
         }
 
-        [Fact] // https://github.com/aspnet/Blazor/issues/597
+        [Fact] // https://github.com/dotnet/blazor/issues/597
         public void Regression_597()
         {
             // Arrange
@@ -5186,7 +5186,7 @@ namespace Test
             CompileToAssembly(generated);
         }
 
-        [Fact] // https://github.com/aspnet/Blazor/issues/772
+        [Fact] // https://github.com/dotnet/blazor/issues/772
         public void Regression_772()
         {
             // Arrange
@@ -5224,7 +5224,7 @@ Welcome to your new app.
                 d => Assert.Equal("RZ1035", d.Id));
         }
 
-        [Fact] // https://github.com/aspnet/Blazor/issues/773
+        [Fact] // https://github.com/dotnet/blazor/issues/773
         public void Regression_773()
         {
             // Arrange

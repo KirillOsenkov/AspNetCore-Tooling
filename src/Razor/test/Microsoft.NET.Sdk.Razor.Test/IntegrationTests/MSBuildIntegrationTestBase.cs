@@ -40,6 +40,8 @@ namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
 
         protected string PublishOutputPath => Path.Combine(OutputPath, "publish");
 
+        protected string GetRidSpecificPublishOutputPath(string rid) => Path.Combine(OutputPath, rid, "publish");
+
         // Used by the test framework to set the project that we're working with
         internal static ProjectDirectory Project
         {
@@ -93,7 +95,7 @@ namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
                 // Let the test app know it is running as part of a test.
                 "/p:RunningAsTest=true",
 
-                $"/p:MicrosoftNETCoreApp31PackageVersion={BuildVariables.MicrosoftNETCoreApp31PackageVersion}",
+                $"/p:MicrosoftNETCoreApp50PackageVersion={BuildVariables.MicrosoftNETCoreApp50PackageVersion}",
                 $"/p:MicrosoftNetCompilersToolsetPackageVersion={BuildVariables.MicrosoftNetCompilersToolsetPackageVersion}",
 
                 // Additional restore sources for projects that require built packages

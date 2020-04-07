@@ -2,7 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Testing;
 using Xunit;
 
 namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
@@ -212,7 +215,7 @@ namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
         [InitializeTestProject("SimpleMvc")]
         public async Task IntrospectJsonContentFiles_WithExcludeConfigFilesFromBuildOutputSet()
         {
-            // Verifies that the fix for https://github.com/aspnet/AspNetCore/issues/14017 works.
+            // Verifies that the fix for https://github.com/dotnet/aspnetcore/issues/14017 works.
             var result = await DotnetMSBuild("_IntrospectContentItems", "/p:ExcludeConfigFilesFromBuildOutput=true");
 
             Assert.BuildPassed(result);
@@ -220,6 +223,50 @@ namespace Microsoft.AspNetCore.Razor.Design.IntegrationTests
             Assert.BuildOutputContainsLine(result, $"Content: {launchSettingsPath} CopyToOutputDirectory= CopyToPublishDirectory=Never ExcludeFromSingleFile=true");
             Assert.BuildOutputContainsLine(result, "Content: appsettings.json CopyToOutputDirectory= CopyToPublishDirectory=PreserveNewest ExcludeFromSingleFile=true");
             Assert.BuildOutputContainsLine(result, "Content: appsettings.Development.json CopyToOutputDirectory= CopyToPublishDirectory=PreserveNewest ExcludeFromSingleFile=true");
+        }
+
+        [Fact]
+        [InitializeTestProject("SimpleMvc")]
+        public async Task IntrospectRazorTasksDllPath()
+        {
+            // Regression test for https://github.com/dotnet/aspnetcore/issues/17308
+            var solutionRoot = GetType().Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                .First(a => a.Key == "Testing.RepoRoot")
+                .Value;
+
+            var tfm =
+#if NETCOREAPP5_0
+                "netcoreapp5.0";
+#else
+#error Target framework needs to be updated.
+#endif
+
+            var expected = Path.Combine(solutionRoot, "artifacts", "bin", "Microsoft.NET.Sdk.Razor", Configuration, "sdk-output", "tasks", tfm, "Microsoft.NET.Sdk.Razor.Tasks.dll");
+
+            // Verifies the fix for https://github.com/dotnet/aspnetcore/issues/17308
+            var result = await DotnetMSBuild("_IntrospectRazorTasks");
+
+            Assert.BuildPassed(result);
+            Assert.BuildOutputContainsLine(result, $"RazorTasksPath: {expected}");
+        }
+
+        [ConditionalFact]
+        [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
+        [InitializeTestProject("SimpleMvc")]
+        public async Task IntrospectRazorTasksDllPath_DesktopMsBuild()
+        {
+            var solutionRoot = GetType().Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+                .First(a => a.Key == "Testing.RepoRoot")
+                .Value;
+
+            var tfm = "net46";
+            var expected = Path.Combine(solutionRoot, "artifacts", "bin", "Microsoft.NET.Sdk.Razor", Configuration, "sdk-output", "tasks", tfm, "Microsoft.NET.Sdk.Razor.Tasks.dll");
+
+            // Verifies the fix for https://github.com/dotnet/aspnetcore/issues/17308
+            var result = await DotnetMSBuild("_IntrospectRazorTasks", msBuildProcessKind: MSBuildProcessKind.Desktop);
+
+            Assert.BuildPassed(result);
+            Assert.BuildOutputContainsLine(result, $"RazorTasksPath: {expected}");
         }
     }
 }
