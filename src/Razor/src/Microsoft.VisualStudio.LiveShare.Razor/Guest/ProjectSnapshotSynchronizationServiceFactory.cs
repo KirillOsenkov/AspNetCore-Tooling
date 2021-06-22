@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Razor;
 using Microsoft.CodeAnalysis.Razor.ProjectSystem;
-using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.LiveShare.Razor.Serialization;
 using Microsoft.VisualStudio.Threading;
 using Newtonsoft.Json;
@@ -26,7 +25,7 @@ namespace Microsoft.VisualStudio.LiveShare.Razor.Guest
         public ProjectSnapshotSynchronizationServiceFactory(
             ProxyAccessor proxyAccessor,
             JoinableTaskContext joinableTaskContext,
-            [Import(typeof(VisualStudioWorkspace))] Workspace workspace)
+            [Import(typeof(Workspace))] Workspace workspace)
         {
             if (proxyAccessor == null)
             {

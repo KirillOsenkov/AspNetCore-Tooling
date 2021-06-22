@@ -13,7 +13,6 @@ using Microsoft.CodeAnalysis.Razor;
 using Microsoft.VisualStudio.LanguageServer.ContainedLanguage;
 using Microsoft.VisualStudio.LanguageServer.Protocol;
 using Microsoft.VisualStudio.LanguageServerClient.Razor.HtmlCSharp;
-using Microsoft.VisualStudio.LanguageServices;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.LanguageServerClient.Razor.Debugging
@@ -32,20 +31,13 @@ namespace Microsoft.VisualStudio.LanguageServerClient.Razor.Debugging
             FileUriProvider fileUriProvider,
             LSPDocumentManager documentManager,
             LSPProjectionProvider projectionProvider,
-            VisualStudioWorkspace workspace) : this(fileUriProvider, documentManager, projectionProvider, (CodeAnalysis.Workspace)workspace)
+            CodeAnalysis.Workspace workspace)
         {
             if (workspace is null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
-        }
 
-        private DefaultRazorProximityExpressionResolver(
-            FileUriProvider fileUriProvider,
-            LSPDocumentManager documentManager,
-            LSPProjectionProvider projectionProvider,
-            CodeAnalysis.Workspace workspace)
-        {
             if (fileUriProvider is null)
             {
                 throw new ArgumentNullException(nameof(fileUriProvider));
