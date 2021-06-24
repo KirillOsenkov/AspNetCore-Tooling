@@ -5,17 +5,16 @@ using System;
 using System.ComponentModel.Composition;
 using Microsoft.AspNetCore.Razor.LanguageServer;
 using Microsoft.CodeAnalysis.Host;
-using Microsoft.VisualStudio.LanguageServices;
 
 namespace Microsoft.VisualStudio.LanguageServerClient.Razor
 {
-    [Export(typeof(VSHostWorkspaceServicesProvider))]
+    [Export(typeof(HostWorkspaceServicesProvider))]
     internal class VSHostWorkspaceServicesProvider : HostWorkspaceServicesProvider
     {
         private readonly CodeAnalysis.Workspace _workspace;
 
         [ImportingConstructor]
-        public VSHostWorkspaceServicesProvider([Import(typeof(VisualStudioWorkspace))] CodeAnalysis.Workspace workspace)
+        public VSHostWorkspaceServicesProvider([Import(typeof(CodeAnalysis.Workspace))] CodeAnalysis.Workspace workspace)
         {
             if (workspace is null)
             {
